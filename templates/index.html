@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilibili Music</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=15"></head>
+<body>
+    <!-- Cover Background -->
+    <div id="coverBg" class="cover-bg"></div>
+
+    <!-- Background Decoration -->
+    <div class="bg-decoration">
+        <div class="bg-gradient bg-gradient-1"></div>
+        <div class="bg-gradient bg-gradient-2"></div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 18V5l12-2v13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="6" cy="18" r="3" fill="#fff"/>
+                        <circle cx="18" cy="16" r="3" fill="#fff"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Bilibili Music</span>
+            </div>
+            <div class="header-search">
+                <div class="header-search-wrap">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="搜索歌曲、UP主..." autocomplete="off">
+                </div>
+                <!-- Search History Dropdown -->
+                <div id="searchHistory" class="search-history-dropdown hidden">
+                    <div class="search-history-header">
+                        <span>搜索历史</span>
+                        <button id="clearHistory">清空</button>
+                    </div>
+                    <div id="historyList" class="search-history-list"></div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="historyTabBtn" class="header-fav-btn" title="播放记录">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+                <button id="favTabBtn" class="header-fav-btn" title="我的收藏">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span id="favCount" class="fav-count hidden">0</span>
+                </button>
+                <button id="themeToggle" class="icon-btn" title="切换主题">
+                    <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Welcome Section (shown when no search) -->
+        <section id="welcomeSection" class="welcome">
+            <div class="welcome-content">
+                <div class="welcome-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3" fill="currentColor" stroke="none"/>
+                        <circle cx="18" cy="16" r="3" fill="currentColor" stroke="none"/>
+                    </svg>
+                </div>
+                <h1 class="welcome-title">发现好音乐</h1>
+                <p class="welcome-subtitle">搜索并播放 Bilibili 上的音乐视频</p>
+                <div class="welcome-hints">
+                    <span class="hint-tag">热门搜索</span>
+                    <button class="hint-btn" data-keyword="周杰伦">周杰伦</button>
+                    <button class="hint-btn" data-keyword="薛之谦">薛之谦</button>
+                    <button class="hint-btn" data-keyword="邓紫棋">邓紫棋</button>
+                    <button class="hint-btn" data-keyword="林俊杰">林俊杰</button>
+                    <button class="hint-btn" data-keyword="陈奕迅">陈奕迅</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Results -->
+        <section id="searchTab" class="tab-content">
+            <div id="skeletonLoader" class="card-grid hidden">
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-cover"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-meta"></div></div>
+            </div>
+            <section id="resultSection" class="result-section hidden">
+                <div class="result-header">
+                    <span id="resultCount" class="result-count"></span>
+                </div>
+                <div id="resultList" class="card-grid"></div>
+                <div id="searchPagination" class="pagination hidden"></div>
+            </section>
+        </section>
+
+        <!-- Favorites -->
+        <section id="favoritesTab" class="tab-content hidden">
+            <div class="result-header">
+                <span id="favTotal" class="result-count"></span>
+                <div class="result-header-actions">
+                    <button id="exportFavBtn" class="header-action-btn" title="导出收藏">导出</button>
+                    <label class="header-action-btn" title="导入收藏">
+                        导入
+                        <input type="file" id="importFavInput" accept=".json" style="display:none">
+                    </label>
+                </div>
+            </div>
+            <div id="favList" class="card-grid"></div>
+            <div id="favPagination" class="pagination hidden"></div>
+            <div id="favEmpty" class="state-message hidden">
+                <div class="state-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <p>还没有收藏的歌曲</p>
+                <small>搜索歌曲后点击收藏按钮添加</small>
+            </div>
+        </section>
+
+        <!-- Play History -->
+        <section id="historyTab" class="tab-content hidden">
+            <div class="result-header">
+                <span id="historyTotal" class="result-count"></span>
+                <div class="result-header-actions">
+                    <button id="clearPlayHistory" class="header-action-btn" title="清空记录">清空</button>
+                </div>
+            </div>
+            <div id="historyListEl" class="card-grid"></div>
+            <div id="historyEmpty" class="state-message hidden">
+                <div class="state-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <p>还没有播放记录</p>
+                <small>播放歌曲后自动记录</small>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Audio Player -->
+    <div id="playerBar" class="player-bar hidden">
+        <div class="player-progress-wrap" id="playerProgressBg">
+            <div class="player-progress-fill" id="playerProgressFill"></div>
+        </div>
+        <div class="player-content">
+            <div class="player-left">
+                <div class="player-cover-wrap">
+                    <img id="playerCover" class="player-cover" src="" alt="">
+                </div>
+                <div class="player-info">
+                    <div class="player-controls">
+                        <button id="playerToggleBtn" class="player-play-btn" title="播放/暂停">
+                            <svg class="icon-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <svg class="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                        </button>
+                        <button id="playerPrevTrackBtn" class="player-ctrl-btn" title="上一曲">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        </button>
+                        <button id="playerNextTrackBtn" class="player-ctrl-btn" title="下一曲">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                        </button>
+                        <div class="player-text">
+                            <span id="playerName" class="player-name">未在播放</span>
+                            <span class="player-time">
+                                <span id="playerCurrent">0:00</span>
+                                <span class="time-sep">/</span>
+                                <span id="playerDuration">0:00</span>
+                            </span>
+                        </div>
+                        <div class="player-lyrics" id="lyricsArea">
+                            <span id="lyricsLine" class="lyrics-text">暂无歌词</span>
+                            <span id="lyricsLineNext" class="lyrics-text-next"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-right">
+                <div class="volume-wrap" id="volumeWrap">
+                    <button id="volumeBtn" class="player-ctrl-btn" title="音量">
+                        <svg class="vol-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                        <svg class="vol-mute-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                    </button>
+                    <div class="volume-slider">
+                        <input type="range" id="volumeSlider" class="vol-range" min="0" max="100" value="100">
+                    </div>
+                </div>
+                <button id="playerLyricsBtn" class="player-ctrl-btn" title="歌词">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </button>
+                <button id="desktopLyricsBtn" class="player-ctrl-btn" title="桌面歌词">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+                </button>
+                <button id="sleepTimerBtn" class="player-ctrl-btn" title="定时关闭">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+                <!-- Sleep Timer Dropdown -->
+                <div id="sleepTimerPanel" class="sleep-timer-panel">
+                    <div class="sleep-timer-option" data-value="off">不定时</div>
+                    <div class="sleep-timer-option" data-value="15">15 分钟</div>
+                    <div class="sleep-timer-option" data-value="30">30 分钟</div>
+                    <div class="sleep-timer-option" data-value="45">45 分钟</div>
+                    <div class="sleep-timer-option" data-value="60">60 分钟</div>
+                    <div class="sleep-timer-option" data-value="end">播完当前歌曲</div>
+                </div>
+                <button id="playerModeBtn" class="player-ctrl-btn" title="顺序播放">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </button>
+                <button id="playerCloseBtn" class="player-ctrl-btn" title="关闭">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Player -->
+    <div id="fullPlayer" class="full-player">
+        <div class="fp-bg" id="fpBg"></div>
+        <div class="fp-inner">
+            <div class="fp-header">
+                <button id="fpBackBtn" class="fp-back-btn" title="返回">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <span id="fpSongName" class="fp-song-name"></span>
+            </div>
+            <div class="fp-body">
+                <div class="fp-cover-area">
+                    <div class="fp-disc" id="fpDisc">
+                        <div class="fp-disc-ring"></div>
+                        <div class="fp-disc-cover">
+                            <img id="fpCoverImg" src="" alt="">
+                        </div>
+                        <div class="fp-disc-hole"></div>
+                    </div>
+                </div>
+                <div class="fp-lyrics-area">
+                    <div id="fpLyricsScroll" class="fp-lyrics-scroll">
+                        <p class="fp-lyrics-empty">暂无歌词</p>
+                    </div>
+                </div>
+            </div>
+            <canvas id="fpCanvas" class="fp-canvas"></canvas>
+            <div class="fp-controls">
+                <div class="fp-progress-row">
+                    <span id="fpCurTime" class="fp-time">0:00</span>
+                    <div class="fp-bar" id="fpBar">
+                        <div class="fp-bar-fill" id="fpBarFill"></div>
+                    </div>
+                    <span id="fpDurTime" class="fp-time">0:00</span>
+                </div>
+                <div id="fpVolumeRow" class="fp-volume-row hidden">
+                    <input type="range" id="fpVolumeSlider" class="fp-vol-range" min="0" max="100" value="100">
+                </div>
+                <div class="fp-btn-row">
+                    <button id="fpModeBtn" class="fp-btn" title="顺序播放">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    </button>
+                    <button id="fpPrevBtn" class="fp-btn" title="上一曲">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+                    <button id="fpPlayBtn" class="fp-btn fp-play-main" title="播放/暂停">
+                        <svg class="fp-icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="fp-icon-pause" width="24" height="24" viewBox="0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                    </button>
+                    <button id="fpNextBtn" class="fp-btn" title="下一曲">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                    <button id="fpListBtn" class="fp-btn" title="播放列表">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                    </button>
+                    <button id="fpVolumeBtn" class="fp-btn" title="音量">
+                        <svg class="fp-vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                        <svg class="fp-vol-mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Player Playlist Panel -->
+    <div id="fpListPanel" class="fp-list-panel hidden">
+        <div class="fp-list-header">
+            <span>播放列表</span>
+            <button id="fpListCloseBtn" class="fp-list-close" title="关闭">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="fpListContent" class="fp-list-content"></div>
+    </div>
+
+    <!-- Desktop Lyrics -->
+    <div id="desktopLyrics" class="desktop-lyrics hidden">
+        <div class="desktop-lyrics-header">
+            <span class="dl-title">桌面歌词</span>
+            <div class="dl-header-btns">
+                <button id="dlLockBtn" class="dl-btn">锁定</button>
+                <button id="dlCloseBtn" class="dl-btn">&times;</button>
+            </div>
+        </div>
+        <div id="dlBody" class="dl-body"></div>
+    </div>
+
+    <script src="/static/js/app.js?v=19"></script>
+</body>
+</html>
